@@ -1,5 +1,7 @@
 # NVIDIA Build Free Provider
 
+<img src="webui/thumbnail.png" alt="NVIDIA Build Free Provider logo" width="160">
+
 Adds NVIDIA Build chat models validated for tool calls.
 
 This is a root-layout Agent Zero community plugin. Agent Zero installs it from Git because `plugin.yaml` lives at the repository root.

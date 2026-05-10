@@ -15,7 +15,7 @@ def install_package_alias() -> None:
     plugins=sys.modules.setdefault("usr.plugins", types.ModuleType("usr.plugins")); plugins.__path__=[]
     provider=sys.modules.setdefault(f"usr.plugins.{PLUGIN_NAME}", types.ModuleType(f"usr.plugins.{PLUGIN_NAME}")); provider.__path__=[str(ROOT)]
 def test_root_plugin_metadata_is_installable():
-    assert (ROOT/"plugin.yaml").is_file(); assert (ROOT/"conf"/"model_providers.yaml").is_file(); assert (ROOT/"conf"/"model_providers.yaml.template").is_file(); assert (ROOT/"webui"/"config.html").is_file()
+    assert (ROOT/"plugin.yaml").is_file(); assert (ROOT/"conf"/"model_providers.yaml").is_file(); assert (ROOT/"conf"/"model_providers.yaml.template").is_file(); assert (ROOT/"webui"/"config.html").is_file(); assert (ROOT/"webui"/"thumbnail.png").is_file()
     assert f"name: {PLUGIN_NAME}" in (ROOT/"plugin.yaml").read_text(encoding="utf-8")
     model_config=(ROOT/"conf"/"model_providers.yaml").read_text(encoding="utf-8")
     template_config=(ROOT/"conf"/"model_providers.yaml.template").read_text(encoding="utf-8")
@@ -121,6 +121,34 @@ def test_nvidia_catalog_rejects_new_failed_model_with_reason():
     assert result["report"]["rejected_models"]["model/a"]["reason"] == "http_422"
     assert result["report"]["rejected_models"]["model/a"]["failure_mode"] == "http_422"
     assert result["report"]["rejected_models"]["model/a"]["previously_validated"] is False
+def test_nvidia_catalog_keeps_never_accepted_rejection_trace_stable():
+    refresh=load_catalog_refresh()
+    previous={"models":[],"rejected_models":{"model/a":{"failure_mode":"http_400","final_status":"rejected","previously_validated":False,"reason":"http_400"}}}
+    result=refresh.merge_probe_results(["model/a"], [("model/a", False, "no_tool_call")], previous)
+    assert result["report"]["rejected_models"]["model/a"]["reason"] == "no_tool_call"
+    assert result["catalog"]["rejected_models"]["model/a"]["reason"] == "http_400"
+    assert result["catalog"]["last_rejection_reasons"]["model/a"] == "http_400"
+def test_nvidia_catalog_keeps_removed_rejection_trace_stable():
+    refresh=load_catalog_refresh()
+    removed={"failure_mode":"no_tool_call","failure_streak":3,"final_status":"removed","previously_validated":True,"reason":"no_tool_call"}
+    result=refresh.merge_probe_results(["model/a"], [("model/a", False, "http_400")], {"models":[],"rejected_models":{"model/a":removed}})
+    assert result["report"]["rejected_models"]["model/a"]["final_status"] == "rejected"
+    assert result["catalog"]["rejected_models"]["model/a"] == removed
+def test_nvidia_catalog_check_does_not_record_first_retained_failure():
+    refresh=load_catalog_refresh()
+    result=refresh.merge_probe_results(["model/a"], [("model/a", False, "timeout")], {"models":["model/a"]}, freeze_retained_streaks=True)
+    assert result["catalog"]["models"] == ["model/a"]
+    assert result["catalog"]["failure_streaks"] == {}
+    assert "model/a" not in result["catalog"]["rejected_models"]
+    assert result["report"]["retained_models"]["model/a"]["failure_streak"] == 1
+def test_nvidia_catalog_check_keeps_existing_retained_streak_stable():
+    refresh=load_catalog_refresh()
+    retained={"failure_mode":"timeout","failure_streak":1,"final_status":"retained","previously_validated":True,"reason":"timeout"}
+    previous={"models":["model/a"],"failure_streaks":{"model/a":1},"rejected_models":{"model/a":retained}}
+    result=refresh.merge_probe_results(["model/a"], [("model/a", False, "timeout")], previous, freeze_retained_streaks=True)
+    assert result["catalog"]["failure_streaks"] == {"model/a":1}
+    assert result["catalog"]["rejected_models"]["model/a"] == retained
+    assert result["report"]["retained_models"]["model/a"]["failure_streak"] == 2
 def test_nvidia_catalog_reports_expected_model_failure_reason():
     refresh=load_catalog_refresh()
     model="deepseek-ai/deepseek-v4-flash"

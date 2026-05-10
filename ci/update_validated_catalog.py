@@ -61,7 +61,7 @@ def main() -> int:
         return 2
 
     previous = load_catalog(OUTPUT)
-    result = asyncio.run(build_catalog(api_key, max(1, args.concurrency), previous))
+    result = asyncio.run(build_catalog(api_key, max(1, args.concurrency), previous, freeze_retained_streaks=args.check))
     rendered = json.dumps(result["catalog"], indent=2, sort_keys=True) + "\n"
     previous_rendered = OUTPUT.read_text(encoding="utf-8") if OUTPUT.exists() else ""
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
@@ -91,7 +91,13 @@ def load_catalog(path: Path) -> dict[str, Any]:
     return payload if isinstance(payload, dict) else {}
 
 
-async def build_catalog(api_key: str, concurrency: int, previous: dict[str, Any] | None = None) -> dict[str, Any]:
+async def build_catalog(
+    api_key: str,
+    concurrency: int,
+    previous: dict[str, Any] | None = None,
+    *,
+    freeze_retained_streaks: bool = False,
+) -> dict[str, Any]:
     previous = previous or {}
     async with httpx.AsyncClient(timeout=45) as client:
         response = await client.get(CATALOG_URL, headers={"Authorization": f"Bearer {api_key}"})
@@ -106,24 +112,26 @@ async def build_catalog(api_key: str, concurrency: int, previous: dict[str, Any]
                 return await probe_model(client, api_key, model_id)
 
         results = await asyncio.gather(*(probe_one(model_id) for model_id in candidates))
-    return merge_probe_results(live_ids, results, previous)
+    return merge_probe_results(live_ids, results, previous, freeze_retained_streaks=freeze_retained_streaks)
 
 
 def merge_probe_results(
     live_ids: list[str],
     probe_results: list[tuple[str, bool, str]],
     previous: dict[str, Any],
+    *,
+    freeze_retained_streaks: bool = False,
 ) -> dict[str, Any]:
     live = set(live_ids)
     candidate_ids = {model_id for model_id in live if not obviously_non_chat_model(model_id)}
     non_chat = live - candidate_ids
     previous_models = string_set(previous.get("models"))
     previous_streaks = int_map(previous.get("failure_streaks"))
+    previous_rejected_models = dict_map(previous.get("rejected_models"))
     result_by_id = {model_id: (ok, reason) for model_id, ok, reason in probe_results}
 
     models: set[str] = set()
     failure_streaks: dict[str, int] = {}
-    last_rejection_reasons: dict[str, str] = {}
     rejected_models: dict[str, dict[str, Any]] = {}
     retained_models: dict[str, dict[str, Any]] = {}
     removed_models: dict[str, dict[str, Any]] = {}
@@ -136,7 +144,6 @@ def merge_probe_results(
         previously_validated = model_id in previous_models
         entry = rejection("obvious_non_chat", previously_validated)
         rejected_models[model_id] = entry | {"final_status": "removed" if previously_validated else "rejected"}
-        last_rejection_reasons[model_id] = "obvious_non_chat"
         if previously_validated:
             removed_models[model_id] = entry
 
@@ -160,16 +167,30 @@ def merge_probe_results(
             status = "removed"
 
         rejected_models[model_id] = rejection(reason, previously_validated, streak if previously_validated else None) | {"final_status": status}
-        last_rejection_reasons[model_id] = reason
 
+    catalog_failure_streaks = failure_streaks
+    catalog_rejected_source = rejected_models
+    if freeze_retained_streaks:
+        catalog_failure_streaks, catalog_rejected_source = frozen_retained_catalog_state(
+            failure_streaks,
+            rejected_models,
+            previous_streaks,
+            previous_rejected_models,
+        )
+    catalog_rejected_models = stable_catalog_rejected_models(catalog_rejected_source, previous_rejected_models, previous_models)
+    last_rejection_reasons = {
+        model_id: reason
+        for model_id, entry in catalog_rejected_models.items()
+        if isinstance(reason := entry.get("reason"), str)
+    }
     catalog = {
         "accepted_models": sorted(models),
         "catalog_url": CATALOG_URL,
-        "failure_streaks": dict(sorted(failure_streaks.items())),
+        "failure_streaks": dict(sorted(catalog_failure_streaks.items())),
         "last_rejection_reasons": dict(sorted(last_rejection_reasons.items())),
         "models": sorted(models),
         "provider_id": "nvidia_build_free",
-        "rejected_models": dict(sorted(rejected_models.items())),
+        "rejected_models": catalog_rejected_models,
         "validation": "models are included only after a successful chat/completions tool-call probe",
     }
     expected_failures = {
@@ -194,6 +215,46 @@ def merge_probe_results(
         "validated_models": sorted(models),
     }
     return {"catalog": catalog, "report": report}
+
+
+def stable_catalog_rejected_models(
+    current: dict[str, dict[str, Any]],
+    previous: dict[str, dict[str, Any]],
+    previous_models: set[str],
+) -> dict[str, dict[str, Any]]:
+    stable = {}
+    for model_id, entry in current.items():
+        previous_entry = previous.get(model_id)
+        if (
+            model_id not in previous_models
+            and entry.get("final_status") == "rejected"
+            and previous_entry
+            and previous_entry.get("final_status") in {"rejected", "removed"}
+        ):
+            stable[model_id] = previous_entry
+        else:
+            stable[model_id] = entry
+    return dict(sorted(stable.items()))
+
+
+def frozen_retained_catalog_state(
+    failure_streaks: dict[str, int],
+    rejected_models: dict[str, dict[str, Any]],
+    previous_streaks: dict[str, int],
+    previous_rejected_models: dict[str, dict[str, Any]],
+) -> tuple[dict[str, int], dict[str, dict[str, Any]]]:
+    catalog_failure_streaks: dict[str, int] = {}
+    catalog_rejected_models = dict(rejected_models)
+    for model_id in failure_streaks:
+        previous_streak = previous_streaks.get(model_id, 0)
+        previous_entry = previous_rejected_models.get(model_id)
+        if previous_streak > 0:
+            catalog_failure_streaks[model_id] = previous_streak
+            if previous_entry and previous_entry.get("final_status") == "retained":
+                catalog_rejected_models[model_id] = previous_entry
+        else:
+            catalog_rejected_models.pop(model_id, None)
+    return catalog_failure_streaks, catalog_rejected_models
 
 
 def rejection(reason: str, previously_validated: bool, failure_streak: int | None = None) -> dict[str, Any]:
@@ -225,6 +286,16 @@ def int_map(value: Any) -> dict[str, int]:
         if isinstance(key, str) and isinstance(item, int) and item > 0:
             result[key] = item
     return result
+
+
+def dict_map(value: Any) -> dict[str, dict[str, Any]]:
+    if not isinstance(value, dict):
+        return {}
+    return {
+        key: item
+        for key, item in value.items()
+        if isinstance(key, str) and isinstance(item, dict)
+    }
 
 def extract_model_ids(payload: dict[str, Any]) -> list[str]:
     data = payload.get("data", [])
