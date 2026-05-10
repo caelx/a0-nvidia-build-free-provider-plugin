@@ -24,7 +24,7 @@ async def build_catalog(api_key: str, concurrency: int) -> dict[str, Any]:
     models=sorted(model_id for model_id, ok, _reason in results if ok); rejected={"obvious_non_chat": len(live_ids)-len(candidates)}
     for _model_id, ok, reason in results:
         if not ok: rejected[reason]=rejected.get(reason,0)+1
-    return {"catalog":{"catalog_url":CATALOG_URL,"models":models,"provider_id":"nvidia_build_free","validation":"models are included only after a successful chat/completions tool-call probe"},"report":{"provider_id":"nvidia_build_free","live_count":len(live_ids),"candidate_count":len(candidates),"validated_count":len(models),"rejected_reasons":rejected,"validated_models":models}}
+    return {"catalog":{"catalog_url":CATALOG_URL,"models":models,"provider_id":"nvidia_build_free","validation":"models are included only after a successful chat/completions tool-call probe"},"report":{"provider_id":"nvidia_build_free","catalog_url":CATALOG_URL,"live_count":len(live_ids),"candidate_count":len(candidates),"presented_model_count":len(models),"validated_count":len(models),"rejected_reasons":rejected,"models":models,"validated_models":models}}
 def extract_model_ids(payload: dict[str, Any]) -> list[str]:
     data=payload.get("data", []); return sorted({item["id"] for item in data if isinstance(item, dict) and isinstance(item.get("id"), str)}) if isinstance(data, list) else []
 def obviously_non_chat_model(model_id: str) -> bool: return any(part in model_id.lower() for part in EXCLUDE_SUBSTRINGS)

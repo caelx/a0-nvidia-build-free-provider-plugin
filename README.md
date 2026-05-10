@@ -49,7 +49,7 @@ GitHub Actions requires this repository secret:
 
 - `NVIDIA_BUILD_FREE_API_KEY`: API key used by required live provider CI.
 
-If the secret is missing, CI fails with a message naming the required secret. NVIDIA additionally uses the same secret in the scheduled catalog refresh workflow.
+If the secret is missing, CI fails with a message naming the required secret. Live catalog CI and the scheduled refresh upload `artifacts/nvidia-catalog-validation.json` with the full validated model catalog presented by this provider.
 
 ## Troubleshooting
 
