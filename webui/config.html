@@ -15,6 +15,7 @@
     <div><dt class="font-medium">Allowed cache count</dt><dd x-text="allowed"></dd></div>
     <div><dt class="font-medium">Unprobed live count</dt><dd x-text="unprobed"></dd></div>
     <div><dt class="font-medium">Failed/backoff count</dt><dd x-text="failed"></dd></div>
+    <div><dt class="font-medium">Failed models</dt><dd><pre class="text-xs whitespace-pre-wrap" x-text="failedModels"></pre></dd></div>
     <div><dt class="font-medium">Worker running</dt><dd x-text="workerRunning"></dd></div>
     <div><dt class="font-medium">Last scan started</dt><dd x-text="started"></dd></div>
     <div><dt class="font-medium">Last scan finished</dt><dd x-text="finished"></dd></div>
@@ -31,6 +32,7 @@ function providerNvidiaBuildFreeStatus() {
     allowed: 0,
     unprobed: 0,
     failed: 0,
+    failedModels: "{}",
     workerRunning: "no",
     started: "",
     finished: "",
@@ -47,6 +49,7 @@ function providerNvidiaBuildFreeStatus() {
         this.allowed = meta.allowed_cache_count || 0;
         this.unprobed = meta.unprobed_live_count || 0;
         this.failed = meta.failed_backoff_count || 0;
+        this.failedModels = JSON.stringify(meta.failed_models || {}, null, 2);
         this.workerRunning = meta.worker_running ? "yes" : "no";
         this.started = meta.last_scan_started_at || "";
         this.finished = meta.last_scan_finished_at || "";
