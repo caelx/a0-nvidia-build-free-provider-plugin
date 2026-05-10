@@ -7,6 +7,7 @@
     "meta/llama-3.2-90b-vision-instruct",
     "meta/llama-3.3-70b-instruct",
     "minimaxai/minimax-m2.5",
+    "minimaxai/minimax-m2.7",
     "mistralai/ministral-14b-instruct-2512",
     "mistralai/mistral-large-3-675b-instruct-2512",
     "mistralai/mistral-medium-3.5-128b",
@@ -28,8 +29,9 @@
     "qwen/qwen3-coder-480b-a35b-instruct",
     "qwen/qwen3-next-80b-a3b-instruct",
     "qwen/qwen3.5-122b-a10b",
-    "stepfun-ai/step-3.5-flash",
+    "qwen/qwen3.5-397b-a17b",
     "z-ai/glm-5.1",
+    "z-ai/glm4.7",
     "z-ai/glm5"
   ],
   "provider_id": "nvidia_build_free",
