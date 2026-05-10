@@ -1,20 +1,57 @@
 from __future__ import annotations
-import asyncio, importlib, json, sys, types
+import asyncio, importlib, importlib.util, json, sys, types
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 PLUGIN_NAME="provider_nvidia_build_free"
 PROVIDER_ID="nvidia_build_free"
 ENV_VAR="NVIDIA_BUILD_FREE_API_KEY"
 HAS_API=True
+MIGRATION_FILE=ROOT/"extensions"/"python"/"startup_migration"/"_10_render_provider_nvidia_build_free.py"
+EXPECTED_ENDPOINT=f"http://127.0.0.1:80/api/plugins/{PLUGIN_NAME}/models"
+TEMPLATE_ENDPOINT=f"http://127.0.0.1:${{WEB_UI_PORT}}/api/plugins/{PLUGIN_NAME}/models"
 def install_package_alias() -> None:
     sys.path.insert(0, str(ROOT))
     usr=sys.modules.setdefault("usr", types.ModuleType("usr")); usr.__path__=[]
     plugins=sys.modules.setdefault("usr.plugins", types.ModuleType("usr.plugins")); plugins.__path__=[]
     provider=sys.modules.setdefault(f"usr.plugins.{PLUGIN_NAME}", types.ModuleType(f"usr.plugins.{PLUGIN_NAME}")); provider.__path__=[str(ROOT)]
 def test_root_plugin_metadata_is_installable():
-    assert (ROOT/"plugin.yaml").is_file(); assert (ROOT/"conf"/"model_providers.yaml").is_file(); assert (ROOT/"webui"/"config.html").is_file()
+    assert (ROOT/"plugin.yaml").is_file(); assert (ROOT/"conf"/"model_providers.yaml").is_file(); assert (ROOT/"conf"/"model_providers.yaml.template").is_file(); assert (ROOT/"webui"/"config.html").is_file()
     assert f"name: {PLUGIN_NAME}" in (ROOT/"plugin.yaml").read_text(encoding="utf-8")
-    assert PROVIDER_ID + ":" in (ROOT/"conf"/"model_providers.yaml").read_text(encoding="utf-8")
+    model_config=(ROOT/"conf"/"model_providers.yaml").read_text(encoding="utf-8")
+    template_config=(ROOT/"conf"/"model_providers.yaml.template").read_text(encoding="utf-8")
+    assert PROVIDER_ID + ":" in model_config
+    assert EXPECTED_ENDPOINT in model_config
+    assert "127.0.0.1:5000" not in model_config
+    assert TEMPLATE_ENDPOINT in template_config
+    assert MIGRATION_FILE.is_file()
+    assert not (ROOT/"extensions"/"python"/"startup_migration"/"_10_render_model_provider.py").exists()
+def test_model_provider_port_resolution(monkeypatch):
+    install_extension_stub()
+    migration=load_migration()
+    monkeypatch.delenv("WEB_UI_PORT", raising=False); monkeypatch.delenv("PORT", raising=False)
+    assert migration._resolve_web_ui_port() == 80
+    monkeypatch.setenv("WEB_UI_PORT", "8080")
+    assert migration._resolve_web_ui_port() == 8080
+    monkeypatch.setenv("WEB_UI_PORT", "invalid"); monkeypatch.setenv("PORT", "9000")
+    assert migration._resolve_web_ui_port() == 9000
+    monkeypatch.delenv("WEB_UI_PORT", raising=False); monkeypatch.delenv("PORT", raising=False)
+    runtime=types.ModuleType("helpers.runtime"); runtime.get_web_ui_port=lambda: 7000
+    sys.modules["helpers"].runtime=runtime; sys.modules["helpers.runtime"]=runtime
+    assert migration._resolve_web_ui_port() == 7000
+def install_extension_stub() -> None:
+    helpers=sys.modules.setdefault("helpers", types.ModuleType("helpers")); helpers.__path__=[]
+    extension=types.ModuleType("helpers.extension")
+    class Extension:
+        def __init__(self, agent=None, **kwargs):
+            self.agent=agent
+    extension.Extension=Extension
+    helpers.extension=extension; sys.modules["helpers.extension"]=extension
+def load_migration():
+    spec=importlib.util.spec_from_file_location("provider_port_migration", MIGRATION_FILE)
+    assert spec and spec.loader
+    module=importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 def test_missing_api_key_returns_clear_status(monkeypatch):
     if not HAS_API: return
     install_package_alias(); monkeypatch.delenv(ENV_VAR, raising=False)

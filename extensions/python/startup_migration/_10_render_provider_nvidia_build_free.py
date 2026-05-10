@@ -6,7 +6,7 @@ from pathlib import Path
 from helpers.extension import Extension
 
 
-class RenderModelProvider(Extension):
+class RenderProviderNvidiaBuildFree(Extension):
     def execute(self, **kwargs):
         plugin_dir = Path(__file__).resolve().parents[3]
         template = plugin_dir / "conf" / "model_providers.yaml.template"
@@ -30,4 +30,4 @@ def _resolve_web_ui_port() -> int:
             return int(getter())
     except Exception:
         pass
-    return 5000
+    return 80
