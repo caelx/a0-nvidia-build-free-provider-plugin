@@ -14,7 +14,7 @@ docker run --rm --shm-size=2g   -e PROVIDER_PLUGIN_REPO="$repo"   -v "$root:/plu
     . /ins/setup_venv.sh local
     cd /a0
     python /plugin-src/ci/install_plugin_via_agent_zero.py
-    plugin_dir="$(python -c "import sys; sys.path.insert(0, '''/git/agent-zero'''); from helpers import plugins; print(plugins.find_plugin_dir('''"$plugin_name"''') or '''''')")"
+    plugin_dir="$(python /plugin-src/ci/find_plugin_dir.py)"
     test -n "$plugin_dir"
     cd "$plugin_dir"
     test -f plugin.yaml
