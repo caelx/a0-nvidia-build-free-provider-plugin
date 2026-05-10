@@ -23,6 +23,17 @@ def checked_in_validated_ids(path: Path | None = None) -> list[str]:
     return sorted({model_id for model_id in models if isinstance(model_id, str)}) if isinstance(models, list) else []
 def extract_model_ids(payload: dict[str, Any]) -> list[str]:
     data=payload.get("data", []); return sorted({item["id"] for item in data if isinstance(item, dict) and isinstance(item.get("id"), str)}) if isinstance(data, list) else []
+def failed_model_details(failed: Any) -> dict[str, dict[str, Any]]:
+    if not isinstance(failed, dict): return {}
+    details={}
+    for model_id, entry in sorted(failed.items()):
+        if not isinstance(model_id, str) or not isinstance(entry, dict): continue
+        reason=entry.get("reason")
+        details[model_id]={"reason": reason if isinstance(reason, str) else "unknown"}
+        for key in ("last_failed_at","next_retry_at"):
+            value=entry.get(key)
+            if isinstance(value, (int,float)): details[model_id][key]=value
+    return details
 async def model_response() -> dict[str, Any]:
     payload,status=await fetch_catalog(); live_ids=extract_model_ids(payload or {}); eligible=[model_id for model_id in live_ids if not probe.obviously_non_chat_model(model_id)]; excluded={"obvious_non_chat": len(live_ids)-len(eligible)}
     cache=state_store.load_state(); checked=set(checked_in_validated_ids()); allowed=set(cache.get("allowed", {})); validated=checked|allowed
@@ -30,4 +41,4 @@ async def model_response() -> dict[str, Any]:
     now=time.time(); failed=cache.get("failed", {}); failed_backoff=[model_id for model_id in eligible if isinstance(failed.get(model_id), dict) and not state_store.retry_ready(failed[model_id], now)]; unprobed=[model_id for model_id in eligible if model_id not in validated and model_id not in failed]
     worker_started=False
     if status == "ok" and state_store.should_start_worker(cache, eligible, now): worker_started=probe.start_background_worker(eligible)
-    return {"data":[{"id": model_id} for model_id in included],"meta":{"provider_id":"nvidia_build_free","required_env_var":ENV_VAR,"catalog_url":CATALOG_URL,"status":status,"included_count":len(included),"excluded_count":max(0,len(eligible)-len(included))+excluded["obvious_non_chat"],"excluded_reasons":excluded,"live_count":len(live_ids),"checked_in_validated_count":len(checked),"local_validated_count":len(allowed-checked),"allowed_cache_count":len(allowed),"unprobed_live_count":len(unprobed),"failed_backoff_count":len(failed_backoff),"worker_running":bool(cache.get("worker",{}).get("running")) or worker_started,"worker_started":worker_started,"last_scan_started_at":cache.get("worker",{}).get("last_scan_started_at"),"last_scan_finished_at":cache.get("worker",{}).get("last_scan_finished_at")}}
+    return {"data":[{"id": model_id} for model_id in included],"meta":{"provider_id":"nvidia_build_free","required_env_var":ENV_VAR,"catalog_url":CATALOG_URL,"status":status,"included_count":len(included),"excluded_count":max(0,len(eligible)-len(included))+excluded["obvious_non_chat"],"excluded_reasons":excluded,"live_count":len(live_ids),"checked_in_validated_count":len(checked),"local_validated_count":len(allowed-checked),"allowed_cache_count":len(allowed),"unprobed_live_count":len(unprobed),"failed_backoff_count":len(failed_backoff),"failed_models":failed_model_details(failed),"worker_running":bool(cache.get("worker",{}).get("running")) or worker_started,"worker_started":worker_started,"last_scan_started_at":cache.get("worker",{}).get("last_scan_started_at"),"last_scan_finished_at":cache.get("worker",{}).get("last_scan_finished_at")}}

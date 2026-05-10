@@ -32,7 +32,7 @@ https://integrate.api.nvidia.com/v1/models
 
 ## Validated Model Catalog
 
-`catalog/validated_models.json` is the trusted baseline model catalog. CI refreshes this file by calling NVIDIA's live catalog and probing candidate models for tool-call support. The scheduled `Refresh NVIDIA Catalog` workflow commits changes directly to `main` when the validated model list changes.
+`catalog/validated_models.json` is the trusted baseline model catalog. CI refreshes this file by calling NVIDIA's live catalog and probing candidate models for tool-call support. `models` and `accepted_models` list the models presented by the provider, while `rejected_models` records rejected model IDs with a `failure_mode`. Previously validated live chat models are retained until they fail three consecutive refresh probes, so transient NVIDIA/API failures do not immediately hide known-good models. The scheduled `Refresh NVIDIA Catalog` workflow commits changes directly to `main` when the validated model list or failure metadata changes.
 
 Installed plugins can still add locally validated models to `state/tool_call_allow_cache.json` after installation. Local additions are runtime state only; they do not modify the repo unless the CI catalog refresh later validates and commits them.
 
@@ -51,7 +51,7 @@ GitHub Actions requires this repository secret:
 
 - `NVIDIA_BUILD_FREE_API_KEY`: API key used by required live provider CI.
 
-If the secret is missing, CI fails with a message naming the required secret. Live catalog CI and the scheduled refresh upload `artifacts/nvidia-catalog-validation.json` with the full validated model catalog presented by this provider.
+If the secret is missing, CI fails with a message naming the required secret. Live catalog CI and the scheduled refresh upload `artifacts/nvidia-catalog-validation.json` with the full validated model catalog, per-model rejection reasons, retained models, and removed models presented by this provider.
 
 ## Troubleshooting
 
