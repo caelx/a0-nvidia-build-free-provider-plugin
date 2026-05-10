@@ -1,0 +1,9 @@
+name: provider_nvidia_build_free
+title: NVIDIA Build Free Provider
+description: Adds NVIDIA Build models that have passed a background tool-call probe.
+version: 1.0.0
+settings_sections:
+  - agent
+per_project_config: false
+per_agent_config: false
+always_enabled: false

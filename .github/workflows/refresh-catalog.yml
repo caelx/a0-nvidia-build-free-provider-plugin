@@ -1,0 +1,45 @@
+name: Refresh NVIDIA Catalog
+
+on:
+  push:
+    branches: ["main"]
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nvidia-catalog-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ github.token }}
+      - uses: astral-sh/setup-uv@v7
+      - name: Refresh validated NVIDIA model catalog
+        env:
+          NVIDIA_BUILD_FREE_API_KEY: ${{ secrets.NVIDIA_BUILD_FREE_API_KEY }}
+        run: uv run --with httpx python ci/update_validated_catalog.py
+      - name: Commit catalog update
+        run: |
+          if git diff --quiet -- catalog/validated_models.json; then
+            echo "catalog unchanged"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add catalog/validated_models.json
+          git commit -m "Update validated NVIDIA model catalog"
+          git push origin HEAD:main
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: nvidia-catalog-artifacts
+          path: artifacts/

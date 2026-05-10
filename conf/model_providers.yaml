@@ -1,0 +1,9 @@
+chat:
+  nvidia_build_free:
+    name: NVIDIA Build Free
+    litellm_provider: openai
+    models_list:
+      endpoint_url: "http://127.0.0.1:5000/api/plugins/provider_nvidia_build_free/models"
+      format: "openai"
+    kwargs:
+      api_base: "https://integrate.api.nvidia.com/v1"

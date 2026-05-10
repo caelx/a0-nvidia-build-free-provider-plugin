@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+      - run: uv run --with pytest --with httpx python -m pytest -s tests/unit
+
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+      - name: Build pinned Agent Zero image
+        run: docker build -t provider-agent-zero-ci -f ci/agent-zero.Dockerfile .
+      - run: bash ci/run_agent_zero_integration.sh
+        env:
+          AGENT_ZERO_IMAGE: provider-agent-zero-ci
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: provider-integration-artifacts
+          path: artifacts/
+
+  live-catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+      - name: Validate NVIDIA catalog is current
+        env:
+          NVIDIA_BUILD_FREE_API_KEY: ${{ secrets.NVIDIA_BUILD_FREE_API_KEY }}
+        run: uv run --with httpx python ci/update_validated_catalog.py --check
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: nvidia-catalog-artifacts
+          path: artifacts/

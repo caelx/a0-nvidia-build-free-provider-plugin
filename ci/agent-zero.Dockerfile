@@ -1,0 +1,1 @@
+FROM agent0ai/agent-zero:latest@sha256:7eace75109567ed0ed5fca3470ab4a4c8e5809931a2163975c4204492336a5b1

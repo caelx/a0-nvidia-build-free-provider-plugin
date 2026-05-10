@@ -1,0 +1,6 @@
+{
+  "catalog_url": "https://integrate.api.nvidia.com/v1/models",
+  "models": [],
+  "provider_id": "nvidia_build_free",
+  "validation": "models are included only after a successful chat/completions tool-call probe"
+}

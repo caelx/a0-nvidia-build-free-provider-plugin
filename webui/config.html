@@ -1,0 +1,59 @@
+<div x-data="providerNvidiaBuildFreeStatus()" x-init="refresh()" class="space-y-4">
+  <div>
+    <div class="text-sm font-semibold">NVIDIA Build Free</div>
+    <div class="text-xs opacity-70">Provider ID: nvidia_build_free</div>
+  </div>
+  <button type="button" class="btn btn-primary" @click="refresh()">Manual refresh/probe</button>
+  <dl class="grid gap-2 text-sm">
+    <div><dt class="font-medium">Required env var</dt><dd>NVIDIA_BUILD_FREE_API_KEY</dd></div>
+    <div><dt class="font-medium">Catalog URL</dt><dd>https://integrate.api.nvidia.com/v1/models</dd></div>
+    <div><dt class="font-medium">Last model-list request status</dt><dd x-text="status"></dd></div>
+    <div><dt class="font-medium">Included model count</dt><dd x-text="included"></dd></div>
+    <div><dt class="font-medium">Excluded model count</dt><dd x-text="excluded"></dd></div>
+    <div><dt class="font-medium">Excluded reasons</dt><dd x-text="reasons"></dd></div>
+    <div><dt class="font-medium">Live /v1/models count</dt><dd x-text="live"></dd></div>
+    <div><dt class="font-medium">Allowed cache count</dt><dd x-text="allowed"></dd></div>
+    <div><dt class="font-medium">Unprobed live count</dt><dd x-text="unprobed"></dd></div>
+    <div><dt class="font-medium">Failed/backoff count</dt><dd x-text="failed"></dd></div>
+    <div><dt class="font-medium">Worker running</dt><dd x-text="workerRunning"></dd></div>
+    <div><dt class="font-medium">Last scan started</dt><dd x-text="started"></dd></div>
+    <div><dt class="font-medium">Last scan finished</dt><dd x-text="finished"></dd></div>
+  </dl>
+</div>
+<script>
+function providerNvidiaBuildFreeStatus() {
+  return {
+    status: "Not checked",
+    included: 0,
+    excluded: 0,
+    reasons: "None",
+    live: 0,
+    allowed: 0,
+    unprobed: 0,
+    failed: 0,
+    workerRunning: "no",
+    started: "",
+    finished: "",
+    async refresh() {
+      try {
+        const res = await fetch("/api/plugins/provider_nvidia_build_free/models");
+        const data = await res.json();
+        const meta = data.meta || {};
+        this.status = meta.status || (res.ok ? "OK" : `HTTP ${res.status}`);
+        this.included = meta.included_count || 0;
+        this.excluded = meta.excluded_count || 0;
+        this.reasons = JSON.stringify(meta.excluded_reasons || {});
+        this.live = meta.live_count || 0;
+        this.allowed = meta.allowed_cache_count || 0;
+        this.unprobed = meta.unprobed_live_count || 0;
+        this.failed = meta.failed_backoff_count || 0;
+        this.workerRunning = meta.worker_running ? "yes" : "no";
+        this.started = meta.last_scan_started_at || "";
+        this.finished = meta.last_scan_finished_at || "";
+      } catch (err) {
+        this.status = err?.message || "Request failed";
+      }
+    }
+  };
+}
+</script>
