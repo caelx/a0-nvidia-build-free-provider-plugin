@@ -15,7 +15,7 @@ def install_package_alias() -> None:
     plugins=sys.modules.setdefault("usr.plugins", types.ModuleType("usr.plugins")); plugins.__path__=[]
     provider=sys.modules.setdefault(f"usr.plugins.{PLUGIN_NAME}", types.ModuleType(f"usr.plugins.{PLUGIN_NAME}")); provider.__path__=[str(ROOT)]
 def test_root_plugin_metadata_is_installable():
-    assert (ROOT/"plugin.yaml").is_file(); assert (ROOT/"conf"/"model_providers.yaml").is_file(); assert (ROOT/"conf"/"model_providers.yaml.template").is_file(); assert (ROOT/"webui"/"config.html").is_file()
+    assert (ROOT/"plugin.yaml").is_file(); assert (ROOT/"conf"/"model_providers.yaml").is_file(); assert (ROOT/"conf"/"model_providers.yaml.template").is_file(); assert (ROOT/"webui"/"config.html").is_file(); assert (ROOT/"webui"/"thumbnail.png").is_file()
     assert f"name: {PLUGIN_NAME}" in (ROOT/"plugin.yaml").read_text(encoding="utf-8")
     model_config=(ROOT/"conf"/"model_providers.yaml").read_text(encoding="utf-8")
     template_config=(ROOT/"conf"/"model_providers.yaml.template").read_text(encoding="utf-8")
