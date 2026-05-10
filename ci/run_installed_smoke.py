@@ -12,7 +12,7 @@ def main() -> int:
     assert result["webui_config"]
     if HAS_API:
         sys.path.insert(0,"/git/agent-zero")
-        payload=asyncio.run(importlib.import_module(f"usr.plugins.{PLUGIN_NAME}.api.models").Models().process({}, None))
+        payload=asyncio.run(importlib.import_module(f"usr.plugins.{PLUGIN_NAME}.api.models").Models(None, None).process({}, None))
         assert isinstance(payload.get("data"), list)
         assert isinstance(payload.get("meta"), dict)
         result["api_meta"]=payload["meta"]
