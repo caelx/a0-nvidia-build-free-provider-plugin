@@ -40,7 +40,8 @@
   ],
   "catalog_url": "https://integrate.api.nvidia.com/v1/models",
   "failure_streaks": {
-    "google/gemma-4-31b-it": 2
+    "mistralai/mistral-nemotron": 1,
+    "moonshotai/kimi-k2.6": 1
   },
   "last_rejection_reasons": {
     "01-ai/yi-large": "http_404",
@@ -63,7 +64,6 @@
     "google/gemma-3-4b-it": "http_422",
     "google/gemma-3n-e2b-it": "http_400",
     "google/gemma-3n-e4b-it": "http_400",
-    "google/gemma-4-31b-it": "timeout",
     "google/recurrentgemma-2b": "http_404",
     "ibm/granite-3.0-3b-a800m-instruct": "http_404",
     "ibm/granite-3.0-8b-instruct": "http_404",
@@ -83,9 +83,11 @@
     "mistralai/mistral-7b-instruct-v0.3": "http_404",
     "mistralai/mistral-large": "http_404",
     "mistralai/mistral-large-2-instruct": "http_404",
+    "mistralai/mistral-nemotron": "http_400",
     "mistralai/mixtral-8x22b-instruct-v0.1": "http_400",
     "mistralai/mixtral-8x22b-v0.1": "http_404",
     "mistralai/mixtral-8x7b-instruct-v0.1": "http_400",
+    "moonshotai/kimi-k2.6": "timeout",
     "nv-mistralai/mistral-nemo-12b-instruct": "http_404",
     "nvidia/ai-synthetic-video-detector": "obvious_non_chat",
     "nvidia/cosmos-reason2-8b": "http_404",
@@ -123,7 +125,6 @@
     "nvidia/nvclip": "http_404",
     "nvidia/riva-translate-4b-instruct": "http_404",
     "nvidia/riva-translate-4b-instruct-v1.1": "http_400",
-    "nvidia/vila": "http_410",
     "qwen/qwen2.5-coder-32b-instruct": "http_400",
     "qwen/qwen3-next-80b-a3b-thinking": "no_tool_call",
     "sarvamai/sarvam-m": "http_400",
@@ -297,13 +298,6 @@
       "previously_validated": false,
       "reason": "http_400"
     },
-    "google/gemma-4-31b-it": {
-      "failure_mode": "timeout",
-      "failure_streak": 2,
-      "final_status": "retained",
-      "previously_validated": true,
-      "reason": "timeout"
-    },
     "google/recurrentgemma-2b": {
       "failure_mode": "http_404",
       "final_status": "rejected",
@@ -419,6 +413,13 @@
       "previously_validated": false,
       "reason": "http_404"
     },
+    "mistralai/mistral-nemotron": {
+      "failure_mode": "http_400",
+      "failure_streak": 1,
+      "final_status": "retained",
+      "previously_validated": true,
+      "reason": "http_400"
+    },
     "mistralai/mixtral-8x22b-instruct-v0.1": {
       "failure_mode": "http_400",
       "final_status": "rejected",
@@ -436,6 +437,13 @@
       "final_status": "rejected",
       "previously_validated": false,
       "reason": "http_400"
+    },
+    "moonshotai/kimi-k2.6": {
+      "failure_mode": "timeout",
+      "failure_streak": 1,
+      "final_status": "retained",
+      "previously_validated": true,
+      "reason": "timeout"
     },
     "nv-mistralai/mistral-nemo-12b-instruct": {
       "failure_mode": "http_404",
@@ -660,12 +668,6 @@
       "final_status": "rejected",
       "previously_validated": false,
       "reason": "http_400"
-    },
-    "nvidia/vila": {
-      "failure_mode": "http_410",
-      "final_status": "rejected",
-      "previously_validated": false,
-      "reason": "http_410"
     },
     "qwen/qwen2.5-coder-32b-instruct": {
       "failure_mode": "http_400",
