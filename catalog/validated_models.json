@@ -39,12 +39,12 @@
   ],
   "catalog_url": "https://integrate.api.nvidia.com/v1/models",
   "failure_streaks": {
-    "deepseek-ai/deepseek-v4-flash": 1,
-    "google/gemma-4-31b-it": 1,
-    "minimaxai/minimax-m2.7": 1,
-    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning": 1,
-    "qwen/qwen3.5-122b-a10b": 1,
-    "z-ai/glm4.7": 1
+    "deepseek-ai/deepseek-v4-flash": 2,
+    "deepseek-ai/deepseek-v4-pro": 1,
+    "google/gemma-4-31b-it": 2,
+    "microsoft/phi-4-mini-instruct": 1,
+    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning": 2,
+    "qwen/qwen3-coder-480b-a35b-instruct": 1
   },
   "last_rejection_reasons": {
     "01-ai/yi-large": "http_404",
@@ -58,6 +58,7 @@
     "databricks/dbrx-instruct": "http_404",
     "deepseek-ai/deepseek-coder-6.7b-instruct": "http_404",
     "deepseek-ai/deepseek-v4-flash": "timeout",
+    "deepseek-ai/deepseek-v4-pro": "timeout",
     "google/codegemma-1.1-7b": "http_404",
     "google/codegemma-7b": "http_404",
     "google/deplot": "http_404",
@@ -82,8 +83,8 @@
     "microsoft/kosmos-2": "http_404",
     "microsoft/phi-3-vision-128k-instruct": "http_404",
     "microsoft/phi-3.5-moe-instruct": "http_404",
+    "microsoft/phi-4-mini-instruct": "timeout",
     "microsoft/phi-4-multimodal-instruct": "no_tool_call",
-    "minimaxai/minimax-m2.7": "timeout",
     "mistralai/codestral-22b-instruct-v0.1": "http_404",
     "mistralai/mistral-7b-instruct-v0.3": "http_404",
     "mistralai/mistral-large": "http_404",
@@ -128,8 +129,8 @@
     "nvidia/riva-translate-4b-instruct": "http_404",
     "nvidia/riva-translate-4b-instruct-v1.1": "http_400",
     "nvidia/vila": "http_404",
+    "qwen/qwen3-coder-480b-a35b-instruct": "timeout",
     "qwen/qwen3-next-80b-a3b-thinking": "no_tool_call",
-    "qwen/qwen3.5-122b-a10b": "timeout",
     "sarvamai/sarvam-m": "http_400",
     "snowflake/arctic-embed-l": "obvious_non_chat",
     "stockmark/stockmark-2-100b-instruct": "http_400",
@@ -138,7 +139,6 @@
     "writer/palmyra-fin-70b-32k": "http_404",
     "writer/palmyra-med-70b": "http_404",
     "writer/palmyra-med-70b-32k": "http_404",
-    "z-ai/glm4.7": "timeout",
     "zyphra/zamba2-7b-instruct": "http_404"
   },
   "models": [
@@ -243,6 +243,13 @@
     },
     "deepseek-ai/deepseek-v4-flash": {
       "failure_mode": "timeout",
+      "failure_streak": 2,
+      "final_status": "retained",
+      "previously_validated": true,
+      "reason": "timeout"
+    },
+    "deepseek-ai/deepseek-v4-pro": {
+      "failure_mode": "timeout",
       "failure_streak": 1,
       "final_status": "retained",
       "previously_validated": true,
@@ -304,7 +311,7 @@
     },
     "google/gemma-4-31b-it": {
       "failure_mode": "timeout",
-      "failure_streak": 1,
+      "failure_streak": 2,
       "final_status": "retained",
       "previously_validated": true,
       "reason": "timeout"
@@ -394,18 +401,18 @@
       "previously_validated": false,
       "reason": "http_404"
     },
-    "microsoft/phi-4-multimodal-instruct": {
-      "failure_mode": "no_tool_call",
-      "final_status": "rejected",
-      "previously_validated": false,
-      "reason": "no_tool_call"
-    },
-    "minimaxai/minimax-m2.7": {
+    "microsoft/phi-4-mini-instruct": {
       "failure_mode": "timeout",
       "failure_streak": 1,
       "final_status": "retained",
       "previously_validated": true,
       "reason": "timeout"
+    },
+    "microsoft/phi-4-multimodal-instruct": {
+      "failure_mode": "no_tool_call",
+      "final_status": "rejected",
+      "previously_validated": false,
+      "reason": "no_tool_call"
     },
     "mistralai/codestral-22b-instruct-v0.1": {
       "failure_mode": "http_404",
@@ -583,7 +590,7 @@
     },
     "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning": {
       "failure_mode": "no_tool_call",
-      "failure_streak": 1,
+      "failure_streak": 2,
       "final_status": "retained",
       "previously_validated": true,
       "reason": "no_tool_call"
@@ -672,18 +679,18 @@
       "previously_validated": false,
       "reason": "http_404"
     },
-    "qwen/qwen3-next-80b-a3b-thinking": {
-      "failure_mode": "no_tool_call",
-      "final_status": "rejected",
-      "previously_validated": false,
-      "reason": "no_tool_call"
-    },
-    "qwen/qwen3.5-122b-a10b": {
+    "qwen/qwen3-coder-480b-a35b-instruct": {
       "failure_mode": "timeout",
       "failure_streak": 1,
       "final_status": "retained",
       "previously_validated": true,
       "reason": "timeout"
+    },
+    "qwen/qwen3-next-80b-a3b-thinking": {
+      "failure_mode": "no_tool_call",
+      "final_status": "rejected",
+      "previously_validated": false,
+      "reason": "no_tool_call"
     },
     "sarvamai/sarvam-m": {
       "failure_mode": "http_400",
@@ -732,13 +739,6 @@
       "final_status": "rejected",
       "previously_validated": false,
       "reason": "http_404"
-    },
-    "z-ai/glm4.7": {
-      "failure_mode": "timeout",
-      "failure_streak": 1,
-      "final_status": "retained",
-      "previously_validated": true,
-      "reason": "timeout"
     },
     "zyphra/zamba2-7b-instruct": {
       "failure_mode": "http_404",
