@@ -2,7 +2,6 @@
   "accepted_models": [
     "deepseek-ai/deepseek-v4-flash",
     "deepseek-ai/deepseek-v4-pro",
-    "google/gemma-4-31b-it",
     "meta/llama-3.1-70b-instruct",
     "meta/llama-3.1-8b-instruct",
     "meta/llama-3.2-11b-vision-instruct",
@@ -21,7 +20,6 @@
     "nvidia/llama-3.3-nemotron-super-49b-v1",
     "nvidia/llama-3.3-nemotron-super-49b-v1.5",
     "nvidia/nemotron-3-nano-30b-a3b",
-    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
     "nvidia/nemotron-3-super-120b-a12b",
     "nvidia/nemotron-mini-4b-instruct",
     "nvidia/nemotron-nano-12b-v2-vl",
@@ -39,12 +37,11 @@
   ],
   "catalog_url": "https://integrate.api.nvidia.com/v1/models",
   "failure_streaks": {
-    "deepseek-ai/deepseek-v4-flash": 2,
-    "deepseek-ai/deepseek-v4-pro": 1,
-    "google/gemma-4-31b-it": 2,
-    "microsoft/phi-4-mini-instruct": 1,
-    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning": 2,
-    "qwen/qwen3-coder-480b-a35b-instruct": 1
+    "deepseek-ai/deepseek-v4-pro": 2,
+    "minimaxai/minimax-m2.7": 1,
+    "mistralai/mistral-nemotron": 1,
+    "mistralai/mistral-small-4-119b-2603": 1,
+    "nvidia/llama-3.3-nemotron-super-49b-v1.5": 1
   },
   "last_rejection_reasons": {
     "01-ai/yi-large": "http_404",
@@ -57,7 +54,6 @@
     "bytedance/seed-oss-36b-instruct": "no_tool_call",
     "databricks/dbrx-instruct": "http_404",
     "deepseek-ai/deepseek-coder-6.7b-instruct": "http_404",
-    "deepseek-ai/deepseek-v4-flash": "timeout",
     "deepseek-ai/deepseek-v4-pro": "timeout",
     "google/codegemma-1.1-7b": "http_404",
     "google/codegemma-7b": "http_404",
@@ -83,12 +79,14 @@
     "microsoft/kosmos-2": "http_404",
     "microsoft/phi-3-vision-128k-instruct": "http_404",
     "microsoft/phi-3.5-moe-instruct": "http_404",
-    "microsoft/phi-4-mini-instruct": "timeout",
     "microsoft/phi-4-multimodal-instruct": "no_tool_call",
+    "minimaxai/minimax-m2.7": "timeout",
     "mistralai/codestral-22b-instruct-v0.1": "http_404",
     "mistralai/mistral-7b-instruct-v0.3": "http_404",
     "mistralai/mistral-large": "http_404",
     "mistralai/mistral-large-2-instruct": "http_404",
+    "mistralai/mistral-nemotron": "timeout",
+    "mistralai/mistral-small-4-119b-2603": "timeout",
     "mistralai/mixtral-8x22b-instruct-v0.1": "http_400",
     "mistralai/mixtral-8x22b-v0.1": "http_404",
     "mistralai/mixtral-8x7b-instruct-v0.1": "http_400",
@@ -108,6 +106,7 @@
     "nvidia/llama-3.2-nemoretriever-300m-embed-v1": "obvious_non_chat",
     "nvidia/llama-3.2-nv-embedqa-1b-v1": "obvious_non_chat",
     "nvidia/llama-3.2-nv-embedqa-1b-v2": "obvious_non_chat",
+    "nvidia/llama-3.3-nemotron-super-49b-v1.5": "no_tool_call",
     "nvidia/llama-nemotron-embed-1b-v2": "obvious_non_chat",
     "nvidia/llama-nemotron-embed-vl-1b-v2": "obvious_non_chat",
     "nvidia/llama3-chatqa-1.5-70b": "http_404",
@@ -129,7 +128,6 @@
     "nvidia/riva-translate-4b-instruct": "http_404",
     "nvidia/riva-translate-4b-instruct-v1.1": "http_400",
     "nvidia/vila": "http_404",
-    "qwen/qwen3-coder-480b-a35b-instruct": "timeout",
     "qwen/qwen3-next-80b-a3b-thinking": "no_tool_call",
     "sarvamai/sarvam-m": "http_400",
     "snowflake/arctic-embed-l": "obvious_non_chat",
@@ -144,7 +142,6 @@
   "models": [
     "deepseek-ai/deepseek-v4-flash",
     "deepseek-ai/deepseek-v4-pro",
-    "google/gemma-4-31b-it",
     "meta/llama-3.1-70b-instruct",
     "meta/llama-3.1-8b-instruct",
     "meta/llama-3.2-11b-vision-instruct",
@@ -163,7 +160,6 @@
     "nvidia/llama-3.3-nemotron-super-49b-v1",
     "nvidia/llama-3.3-nemotron-super-49b-v1.5",
     "nvidia/nemotron-3-nano-30b-a3b",
-    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
     "nvidia/nemotron-3-super-120b-a12b",
     "nvidia/nemotron-mini-4b-instruct",
     "nvidia/nemotron-nano-12b-v2-vl",
@@ -241,16 +237,9 @@
       "previously_validated": false,
       "reason": "http_404"
     },
-    "deepseek-ai/deepseek-v4-flash": {
-      "failure_mode": "timeout",
-      "failure_streak": 2,
-      "final_status": "retained",
-      "previously_validated": true,
-      "reason": "timeout"
-    },
     "deepseek-ai/deepseek-v4-pro": {
       "failure_mode": "timeout",
-      "failure_streak": 1,
+      "failure_streak": 2,
       "final_status": "retained",
       "previously_validated": true,
       "reason": "timeout"
@@ -311,8 +300,8 @@
     },
     "google/gemma-4-31b-it": {
       "failure_mode": "timeout",
-      "failure_streak": 2,
-      "final_status": "retained",
+      "failure_streak": 3,
+      "final_status": "removed",
       "previously_validated": true,
       "reason": "timeout"
     },
@@ -401,18 +390,18 @@
       "previously_validated": false,
       "reason": "http_404"
     },
-    "microsoft/phi-4-mini-instruct": {
-      "failure_mode": "timeout",
-      "failure_streak": 1,
-      "final_status": "retained",
-      "previously_validated": true,
-      "reason": "timeout"
-    },
     "microsoft/phi-4-multimodal-instruct": {
       "failure_mode": "no_tool_call",
       "final_status": "rejected",
       "previously_validated": false,
       "reason": "no_tool_call"
+    },
+    "minimaxai/minimax-m2.7": {
+      "failure_mode": "timeout",
+      "failure_streak": 1,
+      "final_status": "retained",
+      "previously_validated": true,
+      "reason": "timeout"
     },
     "mistralai/codestral-22b-instruct-v0.1": {
       "failure_mode": "http_404",
@@ -437,6 +426,20 @@
       "final_status": "rejected",
       "previously_validated": false,
       "reason": "http_404"
+    },
+    "mistralai/mistral-nemotron": {
+      "failure_mode": "timeout",
+      "failure_streak": 1,
+      "final_status": "retained",
+      "previously_validated": true,
+      "reason": "timeout"
+    },
+    "mistralai/mistral-small-4-119b-2603": {
+      "failure_mode": "timeout",
+      "failure_streak": 1,
+      "final_status": "retained",
+      "previously_validated": true,
+      "reason": "timeout"
     },
     "mistralai/mixtral-8x22b-instruct-v0.1": {
       "failure_mode": "http_400",
@@ -552,6 +555,13 @@
       "previously_validated": false,
       "reason": "obvious_non_chat"
     },
+    "nvidia/llama-3.3-nemotron-super-49b-v1.5": {
+      "failure_mode": "no_tool_call",
+      "failure_streak": 1,
+      "final_status": "retained",
+      "previously_validated": true,
+      "reason": "no_tool_call"
+    },
     "nvidia/llama-nemotron-embed-1b-v2": {
       "failure_mode": "obvious_non_chat",
       "final_status": "rejected",
@@ -590,8 +600,8 @@
     },
     "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning": {
       "failure_mode": "no_tool_call",
-      "failure_streak": 2,
-      "final_status": "retained",
+      "failure_streak": 3,
+      "final_status": "removed",
       "previously_validated": true,
       "reason": "no_tool_call"
     },
@@ -678,13 +688,6 @@
       "final_status": "rejected",
       "previously_validated": false,
       "reason": "http_404"
-    },
-    "qwen/qwen3-coder-480b-a35b-instruct": {
-      "failure_mode": "timeout",
-      "failure_streak": 1,
-      "final_status": "retained",
-      "previously_validated": true,
-      "reason": "timeout"
     },
     "qwen/qwen3-next-80b-a3b-thinking": {
       "failure_mode": "no_tool_call",
