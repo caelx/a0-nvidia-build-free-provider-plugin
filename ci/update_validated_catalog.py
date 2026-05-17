@@ -82,9 +82,10 @@ def main() -> int:
     if args.check and previous_rendered != rendered:
         print(
             "catalog/validated_models.json differs from the current live probe; "
-            "scheduled refresh will update it if the drift persists.",
+            "run ci/update_validated_catalog.py and commit the result.",
             file=sys.stderr,
         )
+        return 1
     return 0
 
 
