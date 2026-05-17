@@ -27,7 +27,6 @@ FAILURE_REASON_PRIORITY = (
     "request_failed",
 )
 EXPECTED_MODELS = (
-    "deepseek-ai/deepseek-v4-pro",
     "deepseek-ai/deepseek-v4-flash",
     "minimaxai/minimax-m2.7",
 )
