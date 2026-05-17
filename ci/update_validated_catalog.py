@@ -27,7 +27,6 @@ FAILURE_REASON_PRIORITY = (
     "request_failed",
 )
 EXPECTED_MODELS = (
-    "deepseek-ai/deepseek-v4-pro",
     "deepseek-ai/deepseek-v4-flash",
     "minimaxai/minimax-m2.7",
 )
@@ -64,9 +63,12 @@ def main() -> int:
     result = asyncio.run(build_catalog(api_key, max(1, args.concurrency), previous, freeze_retained_streaks=args.check))
     rendered = json.dumps(result["catalog"], indent=2, sort_keys=True) + "\n"
     previous_rendered = OUTPUT.read_text(encoding="utf-8") if OUTPUT.exists() else ""
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_text(rendered, encoding="utf-8")
     ARTIFACTS.mkdir(exist_ok=True)
+    if args.check:
+        (ARTIFACTS / "nvidia-catalog-candidate.json").write_text(rendered, encoding="utf-8")
+    else:
+        OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+        OUTPUT.write_text(rendered, encoding="utf-8")
     (ARTIFACTS / "nvidia-catalog-validation.json").write_text(
         json.dumps(result["report"], indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
@@ -78,7 +80,11 @@ def main() -> int:
         print(f"Expected live models missing from catalog: {json.dumps(failed, sort_keys=True)}", file=sys.stderr)
         return 1
     if args.check and previous_rendered != rendered:
-        print("catalog/validated_models.json is stale; run ci/update_validated_catalog.py and commit the result.", file=sys.stderr)
+        print(
+            "catalog/validated_models.json differs from the current live probe; "
+            "run ci/update_validated_catalog.py and commit the result.",
+            file=sys.stderr,
+        )
         return 1
     return 0
 

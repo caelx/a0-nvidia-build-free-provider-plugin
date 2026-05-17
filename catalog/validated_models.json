@@ -1,11 +1,10 @@
 {
   "accepted_models": [
     "deepseek-ai/deepseek-v4-flash",
-    "deepseek-ai/deepseek-v4-pro",
-    "google/gemma-4-31b-it",
     "meta/llama-3.1-70b-instruct",
     "meta/llama-3.1-8b-instruct",
     "meta/llama-3.2-11b-vision-instruct",
+    "meta/llama-3.2-1b-instruct",
     "meta/llama-3.2-90b-vision-instruct",
     "meta/llama-3.3-70b-instruct",
     "microsoft/phi-4-mini-instruct",
@@ -36,12 +35,7 @@
     "z-ai/glm5"
   ],
   "catalog_url": "https://integrate.api.nvidia.com/v1/models",
-  "failure_streaks": {
-    "deepseek-ai/deepseek-v4-flash": 1,
-    "deepseek-ai/deepseek-v4-pro": 2,
-    "google/gemma-4-31b-it": 2,
-    "nvidia/llama-3.3-nemotron-super-49b-v1.5": 1
-  },
+  "failure_streaks": {},
   "last_rejection_reasons": {
     "01-ai/yi-large": "http_404",
     "abacusai/dracarys-llama-3.1-70b-instruct": "http_400",
@@ -53,7 +47,6 @@
     "bytedance/seed-oss-36b-instruct": "no_tool_call",
     "databricks/dbrx-instruct": "http_404",
     "deepseek-ai/deepseek-coder-6.7b-instruct": "http_404",
-    "deepseek-ai/deepseek-v4-flash": "timeout",
     "deepseek-ai/deepseek-v4-pro": "timeout",
     "google/codegemma-1.1-7b": "http_404",
     "google/codegemma-7b": "http_404",
@@ -71,7 +64,6 @@
     "ibm/granite-34b-code-instruct": "http_404",
     "ibm/granite-8b-code-instruct": "http_404",
     "meta/codellama-70b": "http_404",
-    "meta/llama-3.2-1b-instruct": "no_tool_call",
     "meta/llama-3.2-3b-instruct": "no_tool_call",
     "meta/llama-4-maverick-17b-128e-instruct": "no_tool_call",
     "meta/llama-guard-4-12b": "obvious_non_chat",
@@ -103,7 +95,6 @@
     "nvidia/llama-3.2-nemoretriever-300m-embed-v1": "obvious_non_chat",
     "nvidia/llama-3.2-nv-embedqa-1b-v1": "obvious_non_chat",
     "nvidia/llama-3.2-nv-embedqa-1b-v2": "obvious_non_chat",
-    "nvidia/llama-3.3-nemotron-super-49b-v1.5": "no_tool_call",
     "nvidia/llama-nemotron-embed-1b-v2": "obvious_non_chat",
     "nvidia/llama-nemotron-embed-vl-1b-v2": "obvious_non_chat",
     "nvidia/llama3-chatqa-1.5-70b": "http_404",
@@ -138,11 +129,10 @@
   },
   "models": [
     "deepseek-ai/deepseek-v4-flash",
-    "deepseek-ai/deepseek-v4-pro",
-    "google/gemma-4-31b-it",
     "meta/llama-3.1-70b-instruct",
     "meta/llama-3.1-8b-instruct",
     "meta/llama-3.2-11b-vision-instruct",
+    "meta/llama-3.2-1b-instruct",
     "meta/llama-3.2-90b-vision-instruct",
     "meta/llama-3.3-70b-instruct",
     "microsoft/phi-4-mini-instruct",
@@ -234,17 +224,10 @@
       "previously_validated": false,
       "reason": "http_404"
     },
-    "deepseek-ai/deepseek-v4-flash": {
-      "failure_mode": "timeout",
-      "failure_streak": 1,
-      "final_status": "retained",
-      "previously_validated": true,
-      "reason": "timeout"
-    },
     "deepseek-ai/deepseek-v4-pro": {
       "failure_mode": "timeout",
-      "failure_streak": 2,
-      "final_status": "retained",
+      "failure_streak": 3,
+      "final_status": "removed",
       "previously_validated": true,
       "reason": "timeout"
     },
@@ -304,8 +287,8 @@
     },
     "google/gemma-4-31b-it": {
       "failure_mode": "timeout",
-      "failure_streak": 2,
-      "final_status": "retained",
+      "failure_streak": 3,
+      "final_status": "removed",
       "previously_validated": true,
       "reason": "timeout"
     },
@@ -344,13 +327,6 @@
       "final_status": "rejected",
       "previously_validated": false,
       "reason": "http_404"
-    },
-    "meta/llama-3.2-1b-instruct": {
-      "failure_mode": "no_tool_call",
-      "failure_streak": 3,
-      "final_status": "removed",
-      "previously_validated": true,
-      "reason": "no_tool_call"
     },
     "meta/llama-3.2-3b-instruct": {
       "failure_mode": "no_tool_call",
@@ -537,13 +513,6 @@
       "final_status": "rejected",
       "previously_validated": false,
       "reason": "obvious_non_chat"
-    },
-    "nvidia/llama-3.3-nemotron-super-49b-v1.5": {
-      "failure_mode": "no_tool_call",
-      "failure_streak": 1,
-      "final_status": "retained",
-      "previously_validated": true,
-      "reason": "no_tool_call"
     },
     "nvidia/llama-nemotron-embed-1b-v2": {
       "failure_mode": "obvious_non_chat",

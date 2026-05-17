@@ -154,6 +154,35 @@ def test_nvidia_catalog_reports_expected_model_failure_reason():
     model="deepseek-ai/deepseek-v4-flash"
     result=refresh.merge_probe_results([model], [(model, False, "no_tool_call")], {"models":[]})
     assert result["report"]["expected_model_failures"] == {model: "no_tool_call"}
+def test_nvidia_catalog_check_fails_on_drift_without_rewriting_catalog(monkeypatch, tmp_path):
+    refresh=load_catalog_refresh()
+    catalog_path=tmp_path/"validated_models.json"; artifacts=tmp_path/"artifacts"
+    previous={"models":["model/a"],"accepted_models":["model/a"],"provider_id":"nvidia_build_free"}
+    catalog_path.write_text(json.dumps(previous, indent=2, sort_keys=True)+"\n", encoding="utf-8")
+    candidate={
+        "accepted_models":["model/b"],
+        "catalog_url":refresh.CATALOG_URL,
+        "failure_streaks":{},
+        "last_rejection_reasons":{},
+        "models":["model/b"],
+        "provider_id":"nvidia_build_free",
+        "rejected_models":{},
+        "validation":"models are included only after a successful chat/completions tool-call probe",
+    }
+    async def fake_build_catalog(api_key, concurrency, previous_catalog, *, freeze_retained_streaks=False):
+        assert api_key == "secret"
+        assert concurrency == 1
+        assert previous_catalog == previous
+        assert freeze_retained_streaks is True
+        return {"catalog":candidate,"report":{"expected_model_failures":{}}}
+    monkeypatch.setenv(refresh.ENV_VAR, "secret")
+    monkeypatch.setattr(refresh, "OUTPUT", catalog_path)
+    monkeypatch.setattr(refresh, "ARTIFACTS", artifacts)
+    monkeypatch.setattr(refresh, "build_catalog", fake_build_catalog)
+    monkeypatch.setattr(sys, "argv", ["update_validated_catalog.py", "--check", "--concurrency", "1"])
+    assert refresh.main() == 1
+    assert json.loads(catalog_path.read_text(encoding="utf-8")) == previous
+    assert json.loads((artifacts/"nvidia-catalog-candidate.json").read_text(encoding="utf-8")) == candidate
 def test_nvidia_probe_retry_policy():
     refresh=load_catalog_refresh()
     assert refresh.retry_probe("timeout") is True
