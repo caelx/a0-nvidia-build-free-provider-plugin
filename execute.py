@@ -51,7 +51,7 @@ def main(argv: list[str] | None = None) -> int:
     payload = status()
     payload["command"] = "reconcile" if args.command == "run" else args.command
     payload["provider_config_rendered"] = rendered
-    payload["ok"] = status_ok(payload)
+    payload["ok"] = command_ok(args.command, payload)
     print(json.dumps(payload, indent=2, sort_keys=True) if args.json_output else format_status(payload))
     return 0 if payload["ok"] else 1
 
@@ -59,11 +59,15 @@ def main(argv: list[str] | None = None) -> int:
 def status() -> dict[str, Any]:
     root = Path(__file__).resolve().parent
     ensure_agent_zero_path(root)
-    with without_local_helpers(root):
-        from helpers import plugins
+    try:
+        with without_local_helpers(root):
+            from helpers import plugins
 
-        plugin_dir = plugins.find_plugin_dir(PLUGIN_NAME) or ""
-        toggle_state = plugins.get_toggle_state(PLUGIN_NAME) if plugin_dir else "disabled"
+            plugin_dir = plugins.find_plugin_dir(PLUGIN_NAME) or ""
+            toggle_state = plugins.get_toggle_state(PLUGIN_NAME) if plugin_dir else "disabled"
+    except Exception:
+        plugin_dir = ""
+        toggle_state = "disabled"
     provider_registered = provider_is_registered(root)
     provider_config_present = config_contains_provider(Path(plugin_dir) if plugin_dir else root)
     enabled = bool(plugin_dir) and toggle_state != "disabled"
@@ -89,26 +93,39 @@ def status_ok(payload: dict[str, Any]) -> bool:
     return True
 
 
+def command_ok(command: str, payload: dict[str, Any]) -> bool:
+    if command in {"disable", "uninstall"}:
+        return True
+    return status_ok(payload)
+
+
 def set_enabled(enabled: bool) -> None:
     root = Path(__file__).resolve().parent
     ensure_agent_zero_path(root)
-    with without_local_helpers(root):
-        from helpers import plugins
+    try:
+        with without_local_helpers(root):
+            from helpers import plugins
 
-        plugins.toggle_plugin(PLUGIN_NAME, enabled)
+            plugins.toggle_plugin(PLUGIN_NAME, enabled)
+    except Exception:
+        if enabled:
+            raise
 
 
 def provider_is_registered(root: Path) -> bool:
     ensure_agent_zero_path(root)
-    with without_local_helpers(root):
-        from helpers.providers import ProviderManager
+    try:
+        with without_local_helpers(root):
+            from helpers.providers import ProviderManager
 
-        provider_ids = {
-            provider_id
-            for provider in ProviderManager.get_instance().get_raw_providers("chat")
-            for provider_id in (provider.get("id") or provider.get("value"),)
-            if provider_id
-        }
+            provider_ids = {
+                provider_id
+                for provider in ProviderManager.get_instance().get_raw_providers("chat")
+                for provider_id in (provider.get("id") or provider.get("value"),)
+                if provider_id
+            }
+    except Exception:
+        return False
     return PROVIDER_ID in provider_ids
 
 

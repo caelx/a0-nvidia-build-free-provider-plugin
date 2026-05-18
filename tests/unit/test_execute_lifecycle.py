@@ -94,6 +94,52 @@ def test_provider_registration_accepts_value_field(monkeypatch):
     assert payload["provider_registered"] is True
 
 
+def test_status_json_is_structured_without_agent_zero_helpers(monkeypatch, capsys):
+    execute = load_execute()
+    for name in list(sys.modules):
+        if name == "helpers" or name.startswith("helpers."):
+            monkeypatch.delitem(sys.modules, name, raising=False)
+    monkeypatch.setattr(sys, "path", [entry for entry in sys.path if "agent-zero" not in entry])
+
+    assert execute.main(["status", "--json"]) == 1
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["installed"] is False
+    assert payload["toggle_state"] == "disabled"
+    assert payload["provider_registered"] is False
+    assert payload["ok"] is False
+
+
+def test_disable_succeeds_for_missing_config(monkeypatch, capsys):
+    execute = load_execute()
+    reloads: list[str] = []
+    install_agent_zero_stubs(
+        monkeypatch,
+        toggle_state="enabled",
+        provider_ids=set(),
+        reloads=reloads,
+        plugin_dir="",
+    )
+
+    assert execute.main(["disable", "--json"]) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["installed"] is False
+    assert payload["provider_config_present"] is True
+    assert payload["ok"] is True
+
+
+def test_uninstall_is_idempotent_without_agent_zero_helpers(monkeypatch, capsys):
+    execute = load_execute()
+    for name in list(sys.modules):
+        if name == "helpers" or name.startswith("helpers."):
+            monkeypatch.delitem(sys.modules, name, raising=False)
+    monkeypatch.setattr(sys, "path", [entry for entry in sys.path if "agent-zero" not in entry])
+
+    assert execute.main(["uninstall", "--json"]) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["installed"] is False
+    assert payload["ok"] is True
+
+
 def test_provider_config_renderer_uses_current_web_ui_port(monkeypatch, tmp_path):
     helper_path = ROOT / "helpers" / "provider_config.py"
     if not helper_path.is_file():
@@ -122,12 +168,13 @@ def install_agent_zero_stubs(
     provider_ids: set[str],
     reloads: list[str] | None = None,
     provider_entries: list[dict[str, str]] | None = None,
+    plugin_dir: str | None = None,
 ) -> None:
     state = {"toggle": toggle_state}
     helpers = types.ModuleType("helpers")
     helpers.__path__ = []
     plugins = types.ModuleType("helpers.plugins")
-    plugins.find_plugin_dir = lambda name: str(ROOT) if name == PLUGIN_NAME else ""
+    plugins.find_plugin_dir = lambda name: (str(ROOT) if plugin_dir is None else plugin_dir) if name == PLUGIN_NAME else ""
     plugins.get_toggle_state = lambda name: state["toggle"]
 
     def toggle_plugin(name: str, enabled: bool) -> None:
