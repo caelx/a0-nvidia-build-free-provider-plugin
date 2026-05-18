@@ -16,6 +16,8 @@ git@github.com:caelx/a0-nvidia-build-free-provider-plugin.git
 
 After installation, enable `NVIDIA Build Free` in the Agent Zero plugin UI. The plugin registers the chat provider `nvidia_build_free` through `conf/model_providers.yaml`.
 
+`conf/model_providers.yaml` is rendered during install, update, and Agent Zero startup so local plugin API endpoints use the current Agent Zero web UI port. Run `python execute.py status --json` inside the installed plugin directory to verify `installed`, `enabled`, `provider_config_present`, and `provider_registered`.
+
 ## Configuration
 
 Set this environment variable before starting Agent Zero:
