@@ -1,9 +1,0 @@
-{
-  "allowed": {},
-  "failed": {},
-  "worker": {
-    "running": false,
-    "last_scan_started_at": null,
-    "last_scan_finished_at": null
-  }
-}

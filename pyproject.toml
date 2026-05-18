@@ -1,6 +1,6 @@
 [project]
 name = "a0-nvidia-build-free-provider-plugin"
-version = "1.0.1"
+version = "1.0.2"
 description = "Adds NVIDIA Build chat models validated for tool calls."
 requires-python = ">=3.11"
 dependencies = ["httpx>=0.27"]

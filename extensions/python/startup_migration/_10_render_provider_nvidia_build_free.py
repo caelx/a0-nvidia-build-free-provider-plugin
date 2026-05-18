@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import os
+import importlib.util
 from pathlib import Path
 
 from helpers.extension import Extension
@@ -9,25 +9,18 @@ from helpers.extension import Extension
 class RenderProviderNvidiaBuildFree(Extension):
     def execute(self, **kwargs):
         plugin_dir = Path(__file__).resolve().parents[3]
-        template = plugin_dir / "conf" / "model_providers.yaml.template"
-        target = plugin_dir / "conf" / "model_providers.yaml"
-        port = _resolve_web_ui_port()
-        rendered = template.read_text(encoding="utf-8").replace("${WEB_UI_PORT}", str(port))
-        if not target.exists() or target.read_text(encoding="utf-8") != rendered:
-            target.write_text(rendered, encoding="utf-8")
+        _load_provider_config(plugin_dir).render_model_provider_config(plugin_dir)
 
 
 def _resolve_web_ui_port() -> int:
-    for name in ("WEB_UI_PORT", "PORT"):
-        raw = os.environ.get(name, "")
-        if raw.isdigit():
-            return int(raw)
-    try:
-        from helpers import runtime
+    return _load_provider_config(Path(__file__).resolve().parents[3]).resolve_web_ui_port()
 
-        getter = getattr(runtime, "get_web_ui_port", None)
-        if callable(getter):
-            return int(getter())
-    except Exception:
-        pass
-    return 80
+
+def _load_provider_config(plugin_dir: Path):
+    path = plugin_dir / "helpers" / "provider_config.py"
+    spec = importlib.util.spec_from_file_location("_provider_config", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Unable to load provider config helper from {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module

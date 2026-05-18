@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import asyncio, importlib, json, sys
+import asyncio, importlib, json, subprocess, sys
 from pathlib import Path
 PLUGIN_NAME="provider_nvidia_build_free"
 PROVIDER_ID="nvidia_build_free"
@@ -13,6 +13,11 @@ def main() -> int:
     assert EXPECTED_ENDPOINT in result["model_config"]
     assert "127.0.0.1:5000" not in result["model_config"]
     assert result["webui_config"]
+    execute_status=json.loads(subprocess.check_output([sys.executable,"execute.py","status","--json"], text=True))
+    assert execute_status["ok"] is True, execute_status
+    assert execute_status["provider_config_present"] is True
+    assert execute_status["provider_registered"] is True
+    result["execute_status"]=execute_status
     if HAS_API:
         sys.path.insert(0,"/git/agent-zero")
         payload=asyncio.run(importlib.import_module(f"usr.plugins.{PLUGIN_NAME}.api.models").Models(None, None).process({}, None))
