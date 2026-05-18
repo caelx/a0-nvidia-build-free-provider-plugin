@@ -10,8 +10,8 @@ def main() -> int:
     result={"plugin_name":PLUGIN_NAME,"provider_id":PROVIDER_ID,"plugin_yaml":Path("plugin.yaml").is_file(),"model_config":Path("conf/model_providers.yaml").read_text(encoding="utf-8"),"webui_config":Path("webui/config.html").is_file()}
     assert result["plugin_yaml"]
     assert PROVIDER_ID + ":" in result["model_config"]
-    assert EXPECTED_ENDPOINT in result["model_config"]
-    assert "127.0.0.1:5000" not in result["model_config"]
+    assert "http://127.0.0.1:" in result["model_config"]
+    assert f"/api/plugins/{PLUGIN_NAME}/models" in result["model_config"]
     assert result["webui_config"]
     execute_status=json.loads(subprocess.check_output([sys.executable,"execute.py","status","--json"], text=True))
     assert execute_status["ok"] is True, execute_status
