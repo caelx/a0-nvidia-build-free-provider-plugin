@@ -20,13 +20,24 @@ def main(argv: list[str] | None = None) -> int:
         "command",
         nargs="?",
         default="reconcile",
-        choices=["install", "update", "uninstall", "enable", "disable", "status", "reconcile", "run"],
+        choices=[
+            "install",
+            "setup",
+            "repair",
+            "update",
+            "uninstall",
+            "enable",
+            "disable",
+            "status",
+            "reconcile",
+            "run",
+        ],
     )
     parser.add_argument("--json", action="store_true", dest="json_output")
     args = parser.parse_args(argv)
 
     rendered = False
-    if args.command in {"install", "update", "enable", "reconcile", "run"}:
+    if args.command in {"install", "setup", "repair", "update", "enable", "reconcile", "run"}:
         rendered = render_provider_config()
     if args.command == "enable":
         set_enabled(True)
@@ -91,7 +102,10 @@ def provider_is_registered(root: Path) -> bool:
         from helpers.providers import ProviderManager
 
         provider_ids = {
-            provider["id"] for provider in ProviderManager.get_instance().get_raw_providers("chat")
+            provider_id
+            for provider in ProviderManager.get_instance().get_raw_providers("chat")
+            for provider_id in (provider.get("id") or provider.get("value"),)
+            if provider_id
         }
     return PROVIDER_ID in provider_ids
 
@@ -101,7 +115,13 @@ def reload_provider_cache() -> None:
     ensure_agent_zero_path(root)
     with without_local_helpers(root):
         try:
-            from helpers.providers import ProviderManager
+            from helpers import providers
+
+            reload_providers = getattr(providers, "reload_providers", None)
+            if callable(reload_providers):
+                reload_providers()
+                return
+            ProviderManager = providers.ProviderManager
 
             manager = ProviderManager.get_instance()
             for name in ("reload", "refresh", "load"):

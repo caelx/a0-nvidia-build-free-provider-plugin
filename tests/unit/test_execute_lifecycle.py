@@ -63,7 +63,35 @@ def test_enable_reloads_provider_manager(monkeypatch, capsys):
     assert payload["enabled"] is True
     assert payload["provider_registered"] is True
     assert payload["ok"] is True
-    assert reloads == ["reload"]
+    assert reloads == ["reload_providers"]
+
+
+def test_setup_alias_renders_and_reports_status(monkeypatch, capsys):
+    execute = load_execute()
+    reloads: list[str] = []
+    install_agent_zero_stubs(
+        monkeypatch,
+        toggle_state="enabled",
+        provider_ids={PROVIDER_ID},
+        reloads=reloads,
+    )
+    assert execute.main(["setup", "--json"]) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["command"] == "setup"
+    assert payload["ok"] is True
+    assert reloads == ["reload_providers"]
+
+
+def test_provider_registration_accepts_value_field(monkeypatch):
+    execute = load_execute()
+    install_agent_zero_stubs(
+        monkeypatch,
+        toggle_state="enabled",
+        provider_ids=set(),
+        provider_entries=[{"value": PROVIDER_ID}],
+    )
+    payload = execute.status()
+    assert payload["provider_registered"] is True
 
 
 def test_provider_config_renderer_uses_current_web_ui_port(monkeypatch, tmp_path):
@@ -93,6 +121,7 @@ def install_agent_zero_stubs(
     toggle_state: str,
     provider_ids: set[str],
     reloads: list[str] | None = None,
+    provider_entries: list[dict[str, str]] | None = None,
 ) -> None:
     state = {"toggle": toggle_state}
     helpers = types.ModuleType("helpers")
@@ -111,6 +140,8 @@ def install_agent_zero_stubs(
     class Manager:
         def get_raw_providers(self, kind: str):
             assert kind == "chat"
+            if provider_entries is not None:
+                return provider_entries
             return [{"id": provider_id} for provider_id in sorted(provider_ids)]
 
         def reload(self) -> None:
@@ -125,6 +156,7 @@ def install_agent_zero_stubs(
             return cls._manager
 
     providers.ProviderManager = ProviderManager
+    providers.reload_providers = lambda: reloads.append("reload_providers") if reloads is not None else None
     helpers.plugins = plugins
     helpers.providers = providers
     monkeypatch.setitem(sys.modules, "helpers", helpers)
