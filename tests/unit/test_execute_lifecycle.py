@@ -75,7 +75,7 @@ def test_setup_alias_renders_and_reports_status(monkeypatch, capsys):
         provider_ids={PROVIDER_ID},
         reloads=reloads,
     )
-    assert execute.main(["setup", "--json"]) == 0
+    assert execute.main(["setup", "--noninteractive", "--json"]) == 0
     payload = json.loads(capsys.readouterr().out)
     assert payload["command"] == "setup"
     assert payload["ok"] is True

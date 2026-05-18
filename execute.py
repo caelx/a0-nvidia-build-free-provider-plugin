@@ -34,6 +34,8 @@ def main(argv: list[str] | None = None) -> int:
         ],
     )
     parser.add_argument("--json", action="store_true", dest="json_output")
+    parser.add_argument("--noninteractive", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--skip-system-deps", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
 
     rendered = False
