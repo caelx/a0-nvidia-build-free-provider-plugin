@@ -151,7 +151,7 @@ def test_nvidia_catalog_check_keeps_existing_retained_streak_stable():
     assert result["report"]["retained_models"]["model/a"]["failure_streak"] == 2
 def test_nvidia_catalog_reports_expected_model_failure_reason():
     refresh=load_catalog_refresh()
-    model="deepseek-ai/deepseek-v4-flash"
+    model="minimaxai/minimax-m2.7"
     result=refresh.merge_probe_results([model], [(model, False, "no_tool_call")], {"models":[]})
     assert result["report"]["expected_model_failures"] == {model: "no_tool_call"}
 def test_nvidia_catalog_check_fails_on_drift_without_rewriting_catalog(monkeypatch, tmp_path):
