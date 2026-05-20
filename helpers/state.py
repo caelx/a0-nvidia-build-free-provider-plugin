@@ -8,6 +8,7 @@ from typing import Any
 
 FAILED_RETRY_SECONDS = 6 * 60 * 60
 FULL_SCAN_SECONDS = 24 * 60 * 60
+WORKER_STALE_SECONDS = 2 * 60 * 60
 
 
 def default_state() -> dict[str, Any]:
@@ -60,9 +61,10 @@ def retry_ready(entry: dict[str, Any], now: float | None = None) -> bool:
 
 
 def should_start_worker(state: dict[str, Any], live_ids: list[str], now: float | None = None) -> bool:
-    if state.get("worker", {}).get("running"):
-        return False
     now = now or time.time()
+    worker = state.get("worker", {})
+    if worker.get("running") and not worker_running_is_stale(worker, now):
+        return False
     allowed = state.get("allowed", {})
     failed = state.get("failed", {})
     for model_id in live_ids:
@@ -73,6 +75,12 @@ def should_start_worker(state: dict[str, Any], live_ids: list[str], now: float |
             return True
     finished = state.get("worker", {}).get("last_scan_finished_at")
     return not isinstance(finished, (int, float)) or finished + FULL_SCAN_SECONDS <= now
+
+
+def worker_running_is_stale(worker: dict[str, Any], now: float | None = None) -> bool:
+    now = now or time.time()
+    started = worker.get("last_scan_started_at")
+    return not isinstance(started, (int, float)) or started + WORKER_STALE_SECONDS <= now
 
 
 def mark_allowed(state: dict[str, Any], model_id: str, now: float | None = None) -> None:
