@@ -17,6 +17,7 @@
     "nvidia/ising-calibration-1-35b-a3b",
     "nvidia/llama-3.1-nemotron-nano-8b-v1",
     "nvidia/llama-3.3-nemotron-super-49b-v1",
+    "nvidia/llama-3.3-nemotron-super-49b-v1.5",
     "nvidia/nemotron-3-nano-30b-a3b",
     "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
     "nvidia/nemotron-3-super-120b-a12b",
@@ -94,7 +95,6 @@
     "nvidia/llama-3.1-nemotron-ultra-253b-v1": "http_404",
     "nvidia/llama-3.2-nemoretriever-1b-vlm-embed-v1": "obvious_non_chat",
     "nvidia/llama-3.2-nv-embedqa-1b-v1": "obvious_non_chat",
-    "nvidia/llama-3.3-nemotron-super-49b-v1.5": "no_tool_call",
     "nvidia/llama-nemotron-embed-1b-v2": "obvious_non_chat",
     "nvidia/llama-nemotron-embed-vl-1b-v2": "obvious_non_chat",
     "nvidia/llama3-chatqa-1.5-70b": "http_404",
@@ -145,6 +145,7 @@
     "nvidia/ising-calibration-1-35b-a3b",
     "nvidia/llama-3.1-nemotron-nano-8b-v1",
     "nvidia/llama-3.3-nemotron-super-49b-v1",
+    "nvidia/llama-3.3-nemotron-super-49b-v1.5",
     "nvidia/nemotron-3-nano-30b-a3b",
     "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
     "nvidia/nemotron-3-super-120b-a12b",
@@ -506,13 +507,6 @@
       "final_status": "rejected",
       "previously_validated": false,
       "reason": "obvious_non_chat"
-    },
-    "nvidia/llama-3.3-nemotron-super-49b-v1.5": {
-      "failure_mode": "no_tool_call",
-      "failure_streak": 3,
-      "final_status": "removed",
-      "previously_validated": true,
-      "reason": "no_tool_call"
     },
     "nvidia/llama-nemotron-embed-1b-v2": {
       "failure_mode": "obvious_non_chat",
