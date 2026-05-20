@@ -1,5 +1,7 @@
 {
   "accepted_models": [
+    "deepseek-ai/deepseek-v4-flash",
+    "deepseek-ai/deepseek-v4-pro",
     "google/gemma-4-31b-it",
     "meta/llama-3.1-70b-instruct",
     "meta/llama-3.1-8b-instruct",
@@ -48,8 +50,6 @@
     "bytedance/seed-oss-36b-instruct": "timeout",
     "databricks/dbrx-instruct": "http_404",
     "deepseek-ai/deepseek-coder-6.7b-instruct": "http_404",
-    "deepseek-ai/deepseek-v4-flash": "timeout",
-    "deepseek-ai/deepseek-v4-pro": "timeout",
     "google/codegemma-1.1-7b": "http_404",
     "google/codegemma-7b": "http_404",
     "google/deplot": "http_404",
@@ -128,6 +128,8 @@
     "zyphra/zamba2-7b-instruct": "http_404"
   },
   "models": [
+    "deepseek-ai/deepseek-v4-flash",
+    "deepseek-ai/deepseek-v4-pro",
     "google/gemma-4-31b-it",
     "meta/llama-3.1-70b-instruct",
     "meta/llama-3.1-8b-instruct",
@@ -222,20 +224,6 @@
       "final_status": "rejected",
       "previously_validated": false,
       "reason": "http_404"
-    },
-    "deepseek-ai/deepseek-v4-flash": {
-      "failure_mode": "timeout",
-      "failure_streak": 3,
-      "final_status": "removed",
-      "previously_validated": true,
-      "reason": "timeout"
-    },
-    "deepseek-ai/deepseek-v4-pro": {
-      "failure_mode": "timeout",
-      "failure_streak": 3,
-      "final_status": "removed",
-      "previously_validated": true,
-      "reason": "timeout"
     },
     "google/codegemma-1.1-7b": {
       "failure_mode": "http_404",
