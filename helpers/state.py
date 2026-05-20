@@ -8,7 +8,9 @@ from typing import Any
 
 FAILED_RETRY_SECONDS = 6 * 60 * 60
 FULL_SCAN_SECONDS = 24 * 60 * 60
-WORKER_STALE_SECONDS = 2 * 60 * 60
+WORKER_PROBE_SECONDS = 45 + 2
+WORKER_STALE_GRACE_SECONDS = 30 * 60
+WORKER_STALE_MIN_SECONDS = 2 * 60 * 60
 
 
 def default_state() -> dict[str, Any]:
@@ -63,7 +65,7 @@ def retry_ready(entry: dict[str, Any], now: float | None = None) -> bool:
 def should_start_worker(state: dict[str, Any], live_ids: list[str], now: float | None = None) -> bool:
     now = now or time.time()
     worker = state.get("worker", {})
-    if worker.get("running") and not worker_running_is_stale(worker, now):
+    if worker.get("running") and not worker_running_is_stale(worker, now, live_ids):
         return False
     allowed = state.get("allowed", {})
     failed = state.get("failed", {})
@@ -77,10 +79,20 @@ def should_start_worker(state: dict[str, Any], live_ids: list[str], now: float |
     return not isinstance(finished, (int, float)) or finished + FULL_SCAN_SECONDS <= now
 
 
-def worker_running_is_stale(worker: dict[str, Any], now: float | None = None) -> bool:
+def worker_stale_seconds(live_ids: list[str] | None = None) -> int:
+    probe_count = len(live_ids or [])
+    estimated_scan_seconds = probe_count * WORKER_PROBE_SECONDS + WORKER_STALE_GRACE_SECONDS
+    return max(WORKER_STALE_MIN_SECONDS, estimated_scan_seconds)
+
+
+def worker_running_is_stale(
+    worker: dict[str, Any],
+    now: float | None = None,
+    live_ids: list[str] | None = None,
+) -> bool:
     now = now or time.time()
     started = worker.get("last_scan_started_at")
-    return not isinstance(started, (int, float)) or started + WORKER_STALE_SECONDS <= now
+    return not isinstance(started, (int, float)) or started + worker_stale_seconds(live_ids) <= now
 
 
 def mark_allowed(state: dict[str, Any], model_id: str, now: float | None = None) -> None:
