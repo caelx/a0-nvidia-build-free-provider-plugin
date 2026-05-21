@@ -9,6 +9,7 @@
     "meta/llama-3.2-1b-instruct",
     "meta/llama-3.2-90b-vision-instruct",
     "meta/llama-3.3-70b-instruct",
+    "microsoft/phi-4-mini-instruct",
     "minimaxai/minimax-m2.7",
     "mistralai/ministral-14b-instruct-2512",
     "mistralai/mistral-large-3-675b-instruct-2512",
@@ -19,7 +20,6 @@
     "nvidia/ising-calibration-1-35b-a3b",
     "nvidia/llama-3.1-nemotron-nano-8b-v1",
     "nvidia/llama-3.3-nemotron-super-49b-v1",
-    "nvidia/llama-3.3-nemotron-super-49b-v1.5",
     "nvidia/nemotron-3-nano-30b-a3b",
     "nvidia/nemotron-3-super-120b-a12b",
     "nvidia/nemotron-mini-4b-instruct",
@@ -35,9 +35,9 @@
   ],
   "catalog_url": "https://integrate.api.nvidia.com/v1/models",
   "failure_streaks": {
-    "google/gemma-4-31b-it": 1,
-    "nvidia/llama-3.1-nemotron-nano-8b-v1": 1,
-    "nvidia/llama-3.3-nemotron-super-49b-v1.5": 2
+    "minimaxai/minimax-m2.7": 1,
+    "mistralai/mistral-nemotron": 1,
+    "qwen/qwen3-next-80b-a3b-instruct": 1
   },
   "last_rejection_reasons": {
     "01-ai/yi-large": "http_404",
@@ -59,7 +59,6 @@
     "google/gemma-3-4b-it": "http_404",
     "google/gemma-3n-e2b-it": "http_400",
     "google/gemma-3n-e4b-it": "http_400",
-    "google/gemma-4-31b-it": "timeout",
     "google/recurrentgemma-2b": "http_404",
     "ibm/granite-3.0-3b-a800m-instruct": "http_404",
     "ibm/granite-3.0-8b-instruct": "http_404",
@@ -73,12 +72,13 @@
     "microsoft/kosmos-2": "http_404",
     "microsoft/phi-3-vision-128k-instruct": "http_404",
     "microsoft/phi-3.5-moe-instruct": "http_404",
-    "microsoft/phi-4-mini-instruct": "timeout",
     "microsoft/phi-4-multimodal-instruct": "timeout",
+    "minimaxai/minimax-m2.7": "timeout",
     "mistralai/codestral-22b-instruct-v0.1": "http_404",
     "mistralai/mistral-7b-instruct-v0.3": "http_404",
     "mistralai/mistral-large": "http_404",
     "mistralai/mistral-large-2-instruct": "http_404",
+    "mistralai/mistral-nemotron": "http_400",
     "mistralai/mixtral-8x22b-v0.1": "http_404",
     "mistralai/mixtral-8x7b-instruct-v0.1": "http_400",
     "nv-mistralai/mistral-nemo-12b-instruct": "http_404",
@@ -90,7 +90,6 @@
     "nvidia/llama-3.1-nemoguard-8b-topic-control": "obvious_non_chat",
     "nvidia/llama-3.1-nemotron-51b-instruct": "http_404",
     "nvidia/llama-3.1-nemotron-70b-instruct": "http_404",
-    "nvidia/llama-3.1-nemotron-nano-8b-v1": "timeout",
     "nvidia/llama-3.1-nemotron-nano-vl-8b-v1": "http_400",
     "nvidia/llama-3.1-nemotron-safety-guard-8b-v3": "obvious_non_chat",
     "nvidia/llama-3.1-nemotron-ultra-253b-v1": "http_404",
@@ -118,6 +117,7 @@
     "nvidia/riva-translate-4b-instruct": "http_404",
     "nvidia/riva-translate-4b-instruct-v1.1": "http_400",
     "nvidia/vila": "http_404",
+    "qwen/qwen3-next-80b-a3b-instruct": "timeout",
     "qwen/qwen3.5-122b-a10b": "timeout",
     "sarvamai/sarvam-m": "http_400",
     "snowflake/arctic-embed-l": "obvious_non_chat",
@@ -139,6 +139,7 @@
     "meta/llama-3.2-1b-instruct",
     "meta/llama-3.2-90b-vision-instruct",
     "meta/llama-3.3-70b-instruct",
+    "microsoft/phi-4-mini-instruct",
     "minimaxai/minimax-m2.7",
     "mistralai/ministral-14b-instruct-2512",
     "mistralai/mistral-large-3-675b-instruct-2512",
@@ -149,7 +150,6 @@
     "nvidia/ising-calibration-1-35b-a3b",
     "nvidia/llama-3.1-nemotron-nano-8b-v1",
     "nvidia/llama-3.3-nemotron-super-49b-v1",
-    "nvidia/llama-3.3-nemotron-super-49b-v1.5",
     "nvidia/nemotron-3-nano-30b-a3b",
     "nvidia/nemotron-3-super-120b-a12b",
     "nvidia/nemotron-mini-4b-instruct",
@@ -279,13 +279,6 @@
       "previously_validated": false,
       "reason": "http_400"
     },
-    "google/gemma-4-31b-it": {
-      "failure_mode": "timeout",
-      "failure_streak": 1,
-      "final_status": "retained",
-      "previously_validated": true,
-      "reason": "timeout"
-    },
     "google/recurrentgemma-2b": {
       "failure_mode": "http_404",
       "final_status": "rejected",
@@ -364,17 +357,17 @@
       "previously_validated": false,
       "reason": "http_404"
     },
-    "microsoft/phi-4-mini-instruct": {
-      "failure_mode": "timeout",
-      "failure_streak": 3,
-      "final_status": "removed",
-      "previously_validated": true,
-      "reason": "timeout"
-    },
     "microsoft/phi-4-multimodal-instruct": {
       "failure_mode": "timeout",
       "final_status": "rejected",
       "previously_validated": false,
+      "reason": "timeout"
+    },
+    "minimaxai/minimax-m2.7": {
+      "failure_mode": "timeout",
+      "failure_streak": 1,
+      "final_status": "retained",
+      "previously_validated": true,
       "reason": "timeout"
     },
     "mistralai/codestral-22b-instruct-v0.1": {
@@ -400,6 +393,13 @@
       "final_status": "rejected",
       "previously_validated": false,
       "reason": "http_404"
+    },
+    "mistralai/mistral-nemotron": {
+      "failure_mode": "http_400",
+      "failure_streak": 1,
+      "final_status": "retained",
+      "previously_validated": true,
+      "reason": "http_400"
     },
     "mistralai/mixtral-8x22b-v0.1": {
       "failure_mode": "http_404",
@@ -467,13 +467,6 @@
       "previously_validated": false,
       "reason": "http_404"
     },
-    "nvidia/llama-3.1-nemotron-nano-8b-v1": {
-      "failure_mode": "timeout",
-      "failure_streak": 1,
-      "final_status": "retained",
-      "previously_validated": true,
-      "reason": "timeout"
-    },
     "nvidia/llama-3.1-nemotron-nano-vl-8b-v1": {
       "failure_mode": "http_400",
       "final_status": "rejected",
@@ -506,8 +499,8 @@
     },
     "nvidia/llama-3.3-nemotron-super-49b-v1.5": {
       "failure_mode": "no_tool_call",
-      "failure_streak": 2,
-      "final_status": "retained",
+      "failure_streak": 3,
+      "final_status": "removed",
       "previously_validated": true,
       "reason": "no_tool_call"
     },
@@ -637,6 +630,13 @@
       "final_status": "rejected",
       "previously_validated": false,
       "reason": "http_404"
+    },
+    "qwen/qwen3-next-80b-a3b-instruct": {
+      "failure_mode": "timeout",
+      "failure_streak": 1,
+      "final_status": "retained",
+      "previously_validated": true,
+      "reason": "timeout"
     },
     "qwen/qwen3.5-122b-a10b": {
       "failure_mode": "timeout",
