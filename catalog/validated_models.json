@@ -35,9 +35,9 @@
   ],
   "catalog_url": "https://integrate.api.nvidia.com/v1/models",
   "failure_streaks": {
-    "minimaxai/minimax-m2.7": 1,
-    "mistralai/mistral-nemotron": 1,
-    "qwen/qwen3-next-80b-a3b-instruct": 1
+    "meta/llama-3.2-1b-instruct": 1,
+    "microsoft/phi-4-mini-instruct": 1,
+    "qwen/qwen3-next-80b-a3b-instruct": 2
   },
   "last_rejection_reasons": {
     "01-ai/yi-large": "http_404",
@@ -65,6 +65,7 @@
     "ibm/granite-34b-code-instruct": "http_404",
     "ibm/granite-8b-code-instruct": "http_404",
     "meta/codellama-70b": "http_404",
+    "meta/llama-3.2-1b-instruct": "timeout",
     "meta/llama-3.2-3b-instruct": "no_tool_call",
     "meta/llama-4-maverick-17b-128e-instruct": "no_tool_call",
     "meta/llama-guard-4-12b": "obvious_non_chat",
@@ -72,13 +73,12 @@
     "microsoft/kosmos-2": "http_404",
     "microsoft/phi-3-vision-128k-instruct": "http_404",
     "microsoft/phi-3.5-moe-instruct": "http_404",
+    "microsoft/phi-4-mini-instruct": "timeout",
     "microsoft/phi-4-multimodal-instruct": "timeout",
-    "minimaxai/minimax-m2.7": "timeout",
     "mistralai/codestral-22b-instruct-v0.1": "http_404",
     "mistralai/mistral-7b-instruct-v0.3": "http_404",
     "mistralai/mistral-large": "http_404",
     "mistralai/mistral-large-2-instruct": "http_404",
-    "mistralai/mistral-nemotron": "http_400",
     "mistralai/mixtral-8x22b-v0.1": "http_404",
     "mistralai/mixtral-8x7b-instruct-v0.1": "http_400",
     "nv-mistralai/mistral-nemo-12b-instruct": "http_404",
@@ -315,6 +315,13 @@
       "previously_validated": false,
       "reason": "http_404"
     },
+    "meta/llama-3.2-1b-instruct": {
+      "failure_mode": "timeout",
+      "failure_streak": 1,
+      "final_status": "retained",
+      "previously_validated": true,
+      "reason": "timeout"
+    },
     "meta/llama-3.2-3b-instruct": {
       "failure_mode": "no_tool_call",
       "final_status": "rejected",
@@ -357,17 +364,17 @@
       "previously_validated": false,
       "reason": "http_404"
     },
-    "microsoft/phi-4-multimodal-instruct": {
-      "failure_mode": "timeout",
-      "final_status": "rejected",
-      "previously_validated": false,
-      "reason": "timeout"
-    },
-    "minimaxai/minimax-m2.7": {
+    "microsoft/phi-4-mini-instruct": {
       "failure_mode": "timeout",
       "failure_streak": 1,
       "final_status": "retained",
       "previously_validated": true,
+      "reason": "timeout"
+    },
+    "microsoft/phi-4-multimodal-instruct": {
+      "failure_mode": "timeout",
+      "final_status": "rejected",
+      "previously_validated": false,
       "reason": "timeout"
     },
     "mistralai/codestral-22b-instruct-v0.1": {
@@ -393,13 +400,6 @@
       "final_status": "rejected",
       "previously_validated": false,
       "reason": "http_404"
-    },
-    "mistralai/mistral-nemotron": {
-      "failure_mode": "http_400",
-      "failure_streak": 1,
-      "final_status": "retained",
-      "previously_validated": true,
-      "reason": "http_400"
     },
     "mistralai/mixtral-8x22b-v0.1": {
       "failure_mode": "http_404",
@@ -633,7 +633,7 @@
     },
     "qwen/qwen3-next-80b-a3b-instruct": {
       "failure_mode": "timeout",
-      "failure_streak": 1,
+      "failure_streak": 2,
       "final_status": "retained",
       "previously_validated": true,
       "reason": "timeout"
